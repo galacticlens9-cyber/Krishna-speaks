@@ -284,6 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   int currentIndex = 0;
+  final Set<int> bookmarked = {};
+  void toggleBookmark() => setState(() => bookmarked.contains(currentIndex) ? bookmarked.remove(currentIndex) : bookmarked.add(currentIndex));
 
   void nextVerse() {
     setState(() {
@@ -301,6 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Krishna Speaks', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
+          IconButton(icon: Badge(isLabelVisible: bookmarked.isNotEmpty, label: Text(bookmarked.length.toString()), child: const Icon(Icons.bookmark)), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text("Saved Verses")), body: bookmarked.isEmpty ? const Center(child: Text("No saved verses")) : ListView(children: bookmarked.map((i) => ListTile(title: Text(verses[i].chapter), subtitle: Text(verses[i].getTranslation(widget.langCode)))).toList()))))),
           IconButton(
             tooltip: 'Change Language',
             icon: const Icon(Icons.language),
@@ -336,6 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
+                        IconButton(icon: Icon(bookmarked.contains(currentIndex) ? Icons.bookmark : Icons.bookmark_border, color: Colors.amber), onPressed: toggleBookmark),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
