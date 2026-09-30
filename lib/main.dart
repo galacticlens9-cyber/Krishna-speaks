@@ -1,4 +1,116 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
+
+
+class AppLocales {
+  static const Map<String, Map<String, String>> tr = {
+    'en': {
+      'next_verse': 'Next Verse',
+      'ask_krishna': 'Ask Krishna',
+      'saved_verses': 'Saved Verses',
+      'cat_all': 'All',
+      'cat_peace': 'Inner Peace',
+      'cat_duty': 'Duty / Karma',
+      'cat_strength': 'Focus / Strength',
+      'chat_hint': 'Ask a dilemma or question...',
+      'chat_title': "Krishna's Counsel",
+    },
+    'kn': {
+      'next_verse': 'ಮುಂದಿನ ಶ್ಲೋಕ',
+      'ask_krishna': 'ಕೃಷ್ಣನನ್ನು ಕೇಳಿ',
+      'saved_verses': 'ಉಳಿಸಿದ ಶ್ಲೋಕಗಳು',
+      'cat_all': 'ಎಲ್ಲವೂ',
+      'cat_peace': 'ಮನಃಶಾಂತಿ',
+      'cat_duty': 'ಕರ್ತವ್ಯ / ಕರ್ಮ',
+      'cat_strength': 'ಏಕಾಗ್ರತೆ / ಧೈರ್ಯ',
+      'chat_hint': 'ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ...',
+      'chat_title': 'ಕೃಷ್ಣನ ಮಾರ್ಗದರ್ಶನ',
+    },
+    'hi': {
+      'next_verse': 'अगला श्लोक',
+      'ask_krishna': 'कृष्ण से पूछें',
+      'saved_verses': 'सहेजे गए श्लोक',
+      'cat_all': 'सभी',
+      'cat_peace': 'आंतरिक शांति',
+      'cat_duty': 'कर्तव्य / कर्म',
+      'cat_strength': 'एकाग्रता / शक्ति',
+      'chat_hint': 'अपनी दुविधा या प्रश्न पूछें...',
+      'chat_title': 'कृष्ण का मार्गदर्शन',
+    },
+    'te': {
+      'next_verse': 'తరువాతి శ్లోకం',
+      'ask_krishna': 'కృష్ణుడిని అడగండి',
+      'saved_verses': 'భద్రపరచిన శ్లోకాలు',
+      'cat_all': 'అన్నీ',
+      'cat_peace': 'మనశ్శాంతి',
+      'cat_duty': 'కర్తవ్యం / కర్మ',
+      'cat_strength': 'ఏకాగ్రత / శక్తి',
+      'chat_hint': 'మీ ప్రశ్నను అడగండి...',
+      'chat_title': 'కృష్ణుని మార్గదర్శకత్వం',
+    },
+    'ta': {
+      'next_verse': 'அடுத்த ஸ்லோகம்',
+      'ask_krishna': 'கிருஷ்ணரிடம் கேளுங்கள்',
+      'saved_verses': 'சேமிக்கப்பட்டவை',
+      'cat_all': 'அனைத்தும்',
+      'cat_peace': 'மன அமைதி',
+      'cat_duty': 'கடமை / கர்மா',
+      'cat_strength': 'கவனம் / வலிமை',
+      'chat_hint': 'உங்கள் கேள்வியைக் கேளுங்கள்...',
+      'chat_title': 'கிருஷ்ணரின் வழிகாட்டுதல்',
+    },
+    'mr': {
+      'next_verse': 'पुढील श्लोक',
+      'ask_krishna': 'कृष्णाला विचारा',
+      'saved_verses': 'जतन केलेले श्लोक',
+      'cat_all': 'सर्व',
+      'cat_peace': 'मनःशांती',
+      'cat_duty': 'कर्तव्य / कर्म',
+      'cat_strength': 'एकाग्रता / शक्ती',
+      'chat_hint': 'आपली शंका किंवा प्रश्न विचारा...',
+      'chat_title': 'कृष्णाचे मार्गदर्शन',
+    },
+    'bn': {
+      'next_verse': 'পরবর্তী শ্লোক',
+      'ask_krishna': 'শ্রীকৃষ্ণকে জিজ্ঞাসা করুন',
+      'saved_verses': 'সংরক্ষিত শ্লোক',
+      'cat_all': 'সব',
+      'cat_peace': 'মানসিক শান্তি',
+      'cat_duty': 'কর্তব্য / কর্ম',
+      'cat_strength': 'মনোযোগ / শক্তি',
+      'chat_hint': 'আপনার প্রশ্ন জিজ্ঞাসা করুন...',
+      'chat_title': 'শ্রীকৃষ্ণের নির্দেশিকা',
+    },
+    'gu': {
+      'next_verse': 'આગળનો શ્લોક',
+      'ask_krishna': 'કૃષ્ણને પૂછો',
+      'saved_verses': 'સાચવેલા શ્લોકો',
+      'cat_all': 'બધા',
+      'cat_peace': 'આંતરિક શાંતિ',
+      'cat_duty': 'કર્તવ્ય / કર્મ',
+      'cat_strength': 'એકાગ્રતા / શક્તિ',
+      'chat_hint': 'તમારો પ્રશ્ન પૂછો...',
+      'chat_title': 'કૃષ્ણનું માર્ગદર્શન',
+    },
+    'ml': {
+      'next_verse': 'അടുത്ത ശ്ലോകം',
+      'ask_krishna': 'കൃഷ്ണനോട് ചോദിക്കൂ',
+      'saved_verses': 'സൂക്ഷിച്ച ശ്ലോകങ്ങൾ',
+      'cat_all': 'എല്ലാം',
+      'cat_peace': 'മനസ്സമാധാനം',
+      'cat_duty': 'കടമ / കർമ്മം',
+      'cat_strength': 'ഏകാഗ്രത / കരുത്ത്',
+      'chat_hint': 'നിങ്ങളുടെ സംശയം ചോദിക്കൂ...',
+      'chat_title': 'കൃഷ്ണന്റെ ഉപദേശം',
+    },
+  };
+
+  static String get(String key, String lang) {
+    return tr[lang]?[key] ?? tr['en']?[key] ?? key;
+  }
+}
+
 
 void main() {
   runApp(const KrishnaSpeaksApp());
@@ -304,7 +416,21 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Krishna Speaks', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
-          IconButton(icon: Badge(isLabelVisible: bookmarked.isNotEmpty, label: Text(bookmarked.length.toString()), child: const Icon(Icons.bookmark)), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: const Text("Saved Verses")), body: bookmarked.isEmpty ? const Center(child: Text("No saved verses")) : ListView(children: bookmarked.map((i) => ListTile(title: Text(verses[i].chapter), subtitle: Text(verses[i].getTranslation(widget.langCode)))).toList()))))),
+          IconButton(
+            tooltip: "Ask Krishna",
+            icon: const Icon(Icons.chat_bubble_outline, color: Colors.amber),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => KrishnaChatScreen(
+                    langCode: widget.langCode,
+                    langName: widget.langName,
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(icon: Badge(isLabelVisible: bookmarked.isNotEmpty, label: Text(bookmarked.length.toString()), child: const Icon(Icons.bookmark)), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Scaffold(appBar: AppBar(title: Text(AppLocales.get('saved_verses', widget.langCode))), body: bookmarked.isEmpty ? const Center(child: Text("No saved verses")) : ListView(children: bookmarked.map((i) => ListTile(title: Text(verses[i].chapter), subtitle: Text(verses[i].getTranslation(widget.langCode)))).toList()))))),
           IconButton(
             tooltip: 'Change Language',
             icon: const Icon(Icons.language),
@@ -390,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     FilledButton.icon(
                       onPressed: nextVerse,
                       icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Next Verse'),
+                      label: Text(AppLocales.get('next_verse', widget.langCode)),
                     ),
                   ],
                 ),
@@ -398,6 +524,192 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class ChatMessage {
+  final String text;
+  final bool isUser;
+  final String? verseCitation;
+  const ChatMessage({required this.text, required this.isUser, this.verseCitation});
+}
+
+class KrishnaChatScreen extends StatefulWidget {
+  final String langCode;
+  final String langName;
+  const KrishnaChatScreen({super.key, required this.langCode, required this.langName});
+
+  @override
+  State<KrishnaChatScreen> createState() => _KrishnaChatScreenState();
+}
+
+class _KrishnaChatScreenState extends State<KrishnaChatScreen> {
+  final TextEditingController _controller = TextEditingController();
+  final List<ChatMessage> _messages = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _messages.add(
+      ChatMessage(
+        text: "Radhe Radhe. What dilemma or thought burdens your mind today? Speak freely, and let the timeless wisdom of the Gita bring you clarity.",
+        isUser: false,
+      ),
+    );
+  }
+
+  void _sendMessage([String? presetText]) {
+    final text = presetText ?? _controller.text.trim();
+    if (text.isEmpty) return;
+    _controller.clear();
+
+    setState(() {
+      _messages.add(ChatMessage(text: text, isUser: true));
+      _isLoading = true;
+    });
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (!mounted) return;
+      String reply = "";
+      String? citation;
+      final lower = text.toLowerCase();
+
+      if (lower.contains("fear") || lower.contains("anxi") || lower.contains("stress") || lower.contains("worry")) {
+        reply = "Fear arises when the mind clings to uncertain outcomes. Perform your duty with devotion and leave the fruits to the Divine. When you anchor in your inner self, anxiety dissolves.";
+        citation = "Bhagavad Gita 2.47 & 2.48";
+      } else if (lower.contains("anger") || lower.contains("rage") || lower.contains("mad") || lower.contains("fight")) {
+        reply = "From contemplation of sense objects arises attachment; from attachment comes desire; from desire comes anger; and anger leads to clouding of discernment. Practice stepping back before reacting.";
+        citation = "Bhagavad Gita 2.62 - 2.63";
+      } else if (lower.contains("duty") || lower.contains("work") || lower.contains("karma") || lower.contains("job")) {
+        reply = "It is far better to perform one's own duty, though devoid of merit, than to discharge another's duty well. Direct your actions selflessly without attachment.";
+        citation = "Bhagavad Gita 3.35";
+      } else {
+        reply = "Whatever happens, happens for good. Whatever is happening, is happening for good. Whatever will happen, will also happen for good. Steadfast your mind, discard attachment, and act with clarity.";
+        citation = "Bhagavad Gita 2.38";
+      }
+
+      setState(() {
+        _isLoading = false;
+        _messages.add(ChatMessage(text: reply, isUser: false, verseCitation: citation));
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocales.get('chat_title', widget.langCode)),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  "Overcoming anxiety",
+                  "Finding focus in work",
+                  "Controlling anger",
+                  "Fear of failure",
+                ].map((prompt) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ActionChip(
+                    label: Text(prompt, style: const TextStyle(fontSize: 12)),
+                    onPressed: () => _sendMessage(prompt),
+                  ),
+                )).toList(),
+              ),
+            ),
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final msg = _messages[index];
+                return Align(
+                  alignment: msg.isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: msg.isUser ? Colors.amber.shade700 : const Color(0xFF2C2C2C),
+                      borderRadius: BorderRadius.circular(16).copyWith(
+                        bottomRight: msg.isUser ? const Radius.circular(0) : const Radius.circular(16),
+                        bottomLeft: msg.isUser ? const Radius.circular(16) : const Radius.circular(0),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          msg.text,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: msg.isUser ? Colors.black : Colors.white,
+                            height: 1.4,
+                          ),
+                        ),
+                        if (msg.verseCitation != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            "Ref: " + msg.verseCitation!,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.amberAccent,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.amber))),
+            ),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              border: const Border(top: BorderSide(color: Colors.white12)),
+            ),
+            child: SafeArea(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: AppLocales.get('chat_hint', widget.langCode),
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (_) => _sendMessage(),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Colors.amber),
+                    onPressed: () => _sendMessage(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
