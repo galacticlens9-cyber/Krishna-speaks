@@ -284,6 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   int currentIndex = 0;
+  String selectedCategory = "All";
   final Set<int> bookmarked = {};
   void toggleBookmark() => setState(() => bookmarked.contains(currentIndex) ? bookmarked.remove(currentIndex) : bookmarked.add(currentIndex));
 
@@ -328,6 +329,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: ["All", "Inner Peace", "Duty / Karma", "Focus / Strength"].map((cat) => Padding(
+                          padding: const EdgeInsets.only(right: 6, bottom: 12),
+                          child: ChoiceChip(
+                            label: Text(cat, style: const TextStyle(fontSize: 12)),
+                            selected: selectedCategory == cat,
+                            selectedColor: Colors.amber.withOpacity(0.3),
+                            onSelected: (_) => setState(() {
+                              selectedCategory = cat;
+                              if (cat == "Inner Peace") currentIndex = 2;
+                              if (cat == "Duty / Karma") currentIndex = 0;
+                              if (cat == "Focus / Strength") currentIndex = 1;
+                            }),
+                          ),
+                        )).toList(),
+                      ),
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
