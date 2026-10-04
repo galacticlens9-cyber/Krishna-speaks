@@ -1,3 +1,5 @@
+import 'dart:js_util' as js_util;
+import 'dart:html' as html;
 import "dart:convert";
 import "package:flutter/material.dart";
 import "package:http/http.dart" as http;
@@ -216,34 +218,44 @@ class GeminiService {
     final lang = AppLocales.languages[langCode] ?? "English";
     final url = Uri.parse("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent");
 
-    try {
-      final res = await http.post(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": cleanKey,
-        },
-        body: jsonEncode({
-          "contents": [
-            {
-              "parts": [
-                {
-                  "text": "You are Lord Krishna offering Gita wisdom. Address the seeker gently. Cite chapter and verse. Answer completely in " + lang + " in 2 to 3 sentences. Seeker asks: " + prompt
-                }
-              ]
-            }
-          ]
-        }),
-      );
+    for (int attempt = 0; attempt < 2; attempt++) {
+      try {
+        final res = await http.post(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": cleanKey,
+          },
+          body: jsonEncode({
+            "contents": [
+              {
+                "parts": [
+                  {
+                    "text": "Instruction: You are Lord Krishna offering Gita wisdom. Address the seeker gently. Cite chapter and verse. Answer completely in " + lang + " in 2 to 3 sentences. Seeker: " + prompt
+                  }
+                ]
+              }
+            ]
+          }),
+        );
 
-      final data = jsonDecode(res.body);
-      if (res.statusCode == 200) {
-        return data["candidates"]?[0]?["content"]?["parts"]?[0]?["text"] ?? "Seek peace within yourself.";
+        final data = jsonDecode(res.body);
+        if (res.statusCode == 200) {
+          return data["candidates"]?[0]?["content"]?["parts"]?[0]?["text"] ?? "Seek peace within yourself.";
+        }
+
+        if (res.statusCode == 503 && attempt == 0) {
+          await Future.delayed(const Duration(milliseconds: 1500));
+          continue;
+        }
+
+        return "Error (" + res.statusCode.toString() + "): " + (data["error"]?["message"] ?? res.body);
+      } catch (e) {
+        if (attempt == 1) return "Connection error: " + e.toString();
+        await Future.delayed(const Duration(milliseconds: 1000));
       }
-      return "Error " + res.statusCode.toString() + ": " + (data["error"]?["message"] ?? res.body);
-    } catch (e) {
-      return "Connection error: " + e.toString();
     }
+    return "The divine voice is momentary busy. Please ask again.";
   }
 }
 
@@ -255,6 +267,21 @@ class AskKrishnaChatScreen extends StatefulWidget {
 }
 
 class _AskKrishnaChatScreenState extends State<AskKrishnaChatScreen> {
+  bool _speaking = false;
+  void _toggleSpeak(String text) {
+    try {
+      if (_speaking) {
+        js_util.callMethod(html.window, 'krishnaStop', []);
+        setState(() => _speaking = false);
+      } else {
+        js_util.callMethod(html.window, 'krishnaSpeak', [text]);
+        setState(() => _speaking = true);
+      }
+    } catch (e) {
+      debugPrint("Speech error: $e");
+    }
+  }
+
   final TextEditingController _controller = TextEditingController();
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
@@ -321,7 +348,27 @@ class _AskKrishnaChatScreenState extends State<AskKrishnaChatScreen> {
                         color: _messages[i].isUser ? Colors.amber.withOpacity(0.2) : const Color(0xFF242424),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(_messages[i].text),
+                      child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(_messages[i].text),
+        if (!_messages[i].isUser)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: InkWell(
+              onTap: () => _toggleSpeak(_messages[i].text),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(_speaking ? Icons.stop_circle : Icons.volume_up, size: 18, color: Colors.amber),
+                  const SizedBox(width: 4),
+                  Text(_speaking ? "Stop" : "Listen", style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 13)),
+                ],
+              ),
+            ),
+          ),
+      ],
+    ),
                     ),
                   ),
                 ),

@@ -31,6 +31,76 @@
 
   <title>krishna_speaks</title>
   <link rel="manifest" href="manifest.json">
+
+      <script>
+    let currentAudio = null;
+
+    window.krishnaPlayAudio = function(base64Data) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      try {
+        currentAudio = new Audio("data:audio/mp3;base64," + base64Data);
+        currentAudio.play();
+        currentAudio.onended = function() {
+          if (window.onKrishnaAudioEnded) window.onKrishnaAudioEnded();
+        };
+      } catch (e) {
+        console.error("Audio playback error:", e);
+      }
+    };
+
+    window.krishnaStop = function() {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+    };
+  </script>
+
+  <script>
+    let activeUtterance = null;
+
+    window.krishnaSpeak = function(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      const clean = text.replace(/[*#_`]/g, '').trim();
+      const u = new SpeechSynthesisUtterance(clean);
+      activeUtterance = u;
+
+      const isKannada = /[\u0C80-\u0CFF]/.test(clean);
+      const isHindi = /[\u0900-\u097F]/.test(clean);
+      const targetLang = isKannada ? 'kn-IN' : (isHindi ? 'hi-IN' : 'en-IN');
+      u.lang = targetLang;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const naturalVoice = voices.find(v => 
+          v.lang.startsWith(targetLang.split('-')[0]) && 
+          (v.name.includes('Google') || v.name.includes('Natural') || !v.localService)
+        ) || voices.find(v => v.lang.startsWith(targetLang.split('-')[0])) || voices[0];
+
+        if (naturalVoice) u.voice = naturalVoice;
+      }
+
+      u.pitch = 0.88;
+      u.rate = 0.82;
+
+      u.onend = function() { activeUtterance = null; };
+      u.onerror = function() { activeUtterance = null; };
+
+      window.speechSynthesis.speak(u);
+    };
+
+    window.krishnaStop = function() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  </script>
+
 </head>
 <body>
   <!--
