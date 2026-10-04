@@ -328,7 +328,14 @@ class _AskKrishnaChatScreenState extends State<AskKrishnaChatScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: Text(AppLocales.get("ask_krishna", widget.langCode)),
+      title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.spa, color: Color(0xFFFBBF24), size: 24),
+            const SizedBox(width: 8),
+            Text(AppLocales.get("ask_krishna", widget.langCode)),
+          ],
+        ),
       actions: [IconButton(icon: const Icon(Icons.key, color: Colors.amber), onPressed: _askKey)],
     ),
     body: Column(
